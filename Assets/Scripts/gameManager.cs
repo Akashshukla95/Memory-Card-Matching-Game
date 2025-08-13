@@ -10,8 +10,11 @@ public class gameManager : MonoBehaviour {
 	public Sprite cardBack;
 	public GameObject[] cards;
 	public GameObject gameTime;
+	
+	public Text scoreText; // UI reference
+    private int score = 0;
 
-	private bool _init  = false;
+	private bool _init = false;
 	private int _matches = 4;
 
 	// Update is called once per frame
@@ -71,23 +74,37 @@ public class gameManager : MonoBehaviour {
 
 		int x = 0;
 
-		if (cards [c [0]].GetComponent<cardScript> ().cardValue == cards [c [1]].GetComponent<cardScript> ().cardValue) {
+		if (cards[c[0]].GetComponent<cardScript>().cardValue == cards[c[1]].GetComponent<cardScript>().cardValue)
+		{
 			x = 2;
 			_matches--;
+			UpdateScoreText();
 			if (_matches == 0)
-				gameTime.GetComponent<timeScript> ().endGame ();
+				gameTime.GetComponent<timeScript>().endGame();
+		}
+		else
+		{
+			score -= 2;
+			UpdateScoreText();
 		}
 
 
-		for (int i = 0; i < c.Count; i++) {
-			cards [c [i]].GetComponent<cardScript> ().state = x;
-			cards [c [i]].GetComponent<cardScript> ().falseCheck ();
-		}
+		for (int i = 0; i < c.Count; i++)
+			{
+				cards[c[i]].GetComponent<cardScript>().state = x;
+				cards[c[i]].GetComponent<cardScript>().falseCheck();
+			}
 	
 	}
+	
+	void UpdateScoreText()
+    {
+        scoreText.text = "Score: " + score;
+    }
 
-	public void reGame(){
-		SceneManager.LoadScene ("gameScene");
+	public void reGame()
+	{
+		SceneManager.LoadScene("gameScene");
 	}
 
 	public void reMenu(){
