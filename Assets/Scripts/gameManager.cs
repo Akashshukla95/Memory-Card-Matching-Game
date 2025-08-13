@@ -14,11 +14,26 @@ public class gameManager : MonoBehaviour {
 	public Text scoreText; // UI reference
     private int score = 0;
 
+	// Sound effects
+    public AudioClip flipSound;
+    public AudioClip matchSound;
+    public AudioClip mismatchSound;
+    public AudioClip gameOverSound;
+
+    private AudioSource audioSource;
+
+
 	private bool _init = false;
 	private int _matches = 4;
 
-	// Update is called once per frame
-	void Update () {
+	void Start()
+	{
+		audioSource = GetComponent<AudioSource>();
+		LoadGame();
+    }
+
+    // Update is called once per frame
+    void Update () {
 		if (!_init)
 			initializeCards ();
 
@@ -27,23 +42,27 @@ public class gameManager : MonoBehaviour {
 
 	}
 
-	void initializeCards() {
-		for (int id = 0; id < 2; id++) {
-			for (int i = 1; i < 5; i++) {
+	void initializeCards()
+	{
+		for (int id = 0; id < 2; id++)
+		{
+			for (int i = 1; i < 5; i++)
+			{
 
 				bool test = false;
 				int choice = 0;
-				while (!test) {
-					choice = Random.Range (0, cards.Length);
-					test = !(cards [choice].GetComponent<cardScript> ().initialized);
+				while (!test)
+				{
+					choice = Random.Range(0, cards.Length);
+					test = !(cards[choice].GetComponent<cardScript>().initialized);
 				}
-				cards [choice].GetComponent<cardScript> ().cardValue = i;
-				cards [choice].GetComponent<cardScript> ().initialized = true;
+				cards[choice].GetComponent<cardScript>().cardValue = i;
+				cards[choice].GetComponent<cardScript>().initialized = true;
 			}
 		}
 
 		foreach (GameObject c in cards)
-			c.GetComponent<cardScript> ().setupGraphics ();
+			c.GetComponent<cardScript>().setupGraphics();
 
 		if (!_init)
 			_init = true;
@@ -76,19 +95,26 @@ public class gameManager : MonoBehaviour {
 
 		if (cards[c[0]].GetComponent<cardScript>().cardValue == cards[c[1]].GetComponent<cardScript>().cardValue)
 		{
+			score += 10;
 			x = 2;
 			_matches--;
 			UpdateScoreText();
 			SaveGame();
 
+			PlaySound(matchSound);
+
 			if (_matches == 0)
+			{
+				PlaySound(gameOverSound);
 				gameTime.GetComponent<timeScript>().endGame();
+			}
 		}
 		else
 		{
 			score -= 2;
 			UpdateScoreText();
 			SaveGame();
+			PlaySound(mismatchSound);
 		}
 
 
@@ -99,6 +125,18 @@ public class gameManager : MonoBehaviour {
 			}
 	
 	}
+
+	 public void PlayFlipSound()
+    {
+		if (_init)
+        PlaySound(flipSound);
+    }
+
+    void PlaySound(AudioClip clip)
+    {
+        if (clip != null)
+            audioSource.PlayOneShot(clip);
+    }
 	
 	void UpdateScoreText()
     {
@@ -111,13 +149,14 @@ public class gameManager : MonoBehaviour {
         PlayerPrefs.Save();
     }
 
-    void LoadGame()
-    {
-        if (PlayerPrefs.HasKey("Score"))
-        {
-            score = PlayerPrefs.GetInt("Score");
-            _matches = PlayerPrefs.GetInt("Matches", 4);
-        }
+	void LoadGame()
+	{
+		UpdateScoreText();
+		if (PlayerPrefs.HasKey("Score"))
+		{
+			score = PlayerPrefs.GetInt("Score");
+			_matches = PlayerPrefs.GetInt("Matches", 4);
+		}
     }
 
     void ClearSave()

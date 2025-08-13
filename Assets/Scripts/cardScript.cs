@@ -30,16 +30,23 @@ public class cardScript : MonoBehaviour {
 		flipcard ();
 	}
 
-	public void flipcard() {
+	public void flipcard()
+	{
 		if (_state == 0)
 			_state = 1;
 		else if (_state == 1)
 			_state = 0;
-		
+
 		if (_state == 0 && !DO_NOT)
-			GetComponent<Image> ().sprite = _cardBack;
+		{
+			GetComponent<Image>().sprite = _cardBack;
+			_manager.GetComponent<gameManager>().PlayFlipSound();
+		}
 		else if (_state == 1 && !DO_NOT)
-			GetComponent<Image> ().sprite = _cardFace;
+		{
+			GetComponent<Image>().sprite = _cardFace;
+			_manager.GetComponent<gameManager>().PlayFlipSound();
+		}
 	}
 
 	public int cardValue {
