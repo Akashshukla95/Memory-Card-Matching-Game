@@ -79,6 +79,8 @@ public class gameManager : MonoBehaviour {
 			x = 2;
 			_matches--;
 			UpdateScoreText();
+			SaveGame();
+
 			if (_matches == 0)
 				gameTime.GetComponent<timeScript>().endGame();
 		}
@@ -86,6 +88,7 @@ public class gameManager : MonoBehaviour {
 		{
 			score -= 2;
 			UpdateScoreText();
+			SaveGame();
 		}
 
 
@@ -100,6 +103,26 @@ public class gameManager : MonoBehaviour {
 	void UpdateScoreText()
     {
         scoreText.text = "Score: " + score;
+    }
+	void SaveGame()
+    {
+        PlayerPrefs.SetInt("Score", score);
+        PlayerPrefs.SetInt("Matches", _matches);
+        PlayerPrefs.Save();
+    }
+
+    void LoadGame()
+    {
+        if (PlayerPrefs.HasKey("Score"))
+        {
+            score = PlayerPrefs.GetInt("Score");
+            _matches = PlayerPrefs.GetInt("Matches", 4);
+        }
+    }
+
+    void ClearSave()
+    {
+        PlayerPrefs.DeleteAll();
     }
 
 	public void reGame()
